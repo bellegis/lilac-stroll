@@ -255,21 +255,41 @@ body.walking #mapbar #mbStreet{display:none}
   .leaflet-control-attribution{font-size:9px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .row .btn{height:46px}
 }
-#grab{display:none}
+#grab,#mtop,.mwalk{display:none}
 @media (max-width:820px){
-  body{display:block}
-  #world{position:fixed;left:0;right:0;top:0;height:calc(100svh - var(--peek,150px) + 14px);display:flex;flex-direction:column}
-  #side{position:fixed;left:0;right:0;bottom:0;z-index:600;height:var(--peek,150px);border-top:0;border-radius:16px 16px 0 0;box-shadow:0 -6px 24px rgba(36,32,43,.18);overflow:hidden;transition:height .32s cubic-bezier(.2,.8,.2,1);padding-bottom:env(safe-area-inset-bottom)}
+  body{display:flex;flex-direction:column;height:100vh;height:100dvh}
+  #mtop{display:block;flex:none;position:relative;z-index:2;background:var(--paper);border-bottom:1px solid var(--line)}
+  body.walking #mtop{display:none}
+  #mtop header{position:relative;display:grid;gap:6px;padding:8px 12px 8px;border:0}
+  #mtop .challenge{font-size:10.5px;padding:5px 9px;border-radius:6px}
+  #mtop h1{display:flex;align-items:center;gap:6px;font-size:25px;line-height:1.1}
+  #mtop h1 .live{order:3}
+  #mtop h1::after{content:"";order:2;width:8px;height:8px;margin:0 4px 5px 2px;border-right:2px solid var(--lilac);border-bottom:2px solid var(--lilac);transform:rotate(45deg)}
+  #mtop .pick{position:absolute;left:12px;right:12px;bottom:6px;height:34px;margin:0}
+  #mtop .pick span{display:none}
+  #mtop .pick select{position:absolute;inset:0;width:100%;height:100%;opacity:0;font-size:16px}
+  #world{position:relative;flex:1 1 auto;min-height:0;height:auto;margin-bottom:calc(var(--peek,170px) - 16px)}
+  #side{position:fixed;left:0;right:0;bottom:0;z-index:600;height:var(--peek,170px);border:0;border-radius:16px 16px 0 0;box-shadow:0 -6px 24px rgba(36,32,43,.16);overflow:hidden;overscroll-behavior:contain;transition:height .3s cubic-bezier(.2,.8,.2,1);padding-bottom:env(safe-area-inset-bottom)}
+  #side.open{height:62vh;height:62dvh;overflow-y:auto}
   #side.dragging{transition:none}
-  #side.half,#side.full{overflow-y:auto}
-  #side.half{height:56svh}
-  #side.full{height:calc(100svh - 62px)}
-  #grab{display:flex;justify-content:center;align-items:center;position:sticky;top:0;z-index:2;width:100%;height:22px;border:0;padding:0;background:var(--paper);touch-action:none;flex:none}
-  #grab span{width:42px;height:5px;border-radius:3px;background:#CFC6D9}
-  #side header{touch-action:none;padding-top:2px}
-  body.walking #side header{display:none}
-  body.walking #sideBody > .sec:first-child{padding-top:4px}
-  body.walking #svWrap{flex:2.2 1 0}
+  #grab{display:flex;justify-content:center;align-items:center;position:sticky;top:0;z-index:3;flex:none;width:100%;height:24px;border:0;padding:0;background:var(--paper);touch-action:none}
+  #grab span{width:40px;height:5px;border-radius:3px;background:#CFC6D9}
+  #sideBody{display:flex;flex-direction:column}
+  #sideBody > .sec.photos{order:-1;padding-top:0}
+  .gl{display:flex;align-items:center;gap:8px;min-height:30px;touch-action:none}
+  .gtx{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .gl .plink{margin-left:0}
+  .mwalk{display:inline-flex;align-items:center;gap:5px;margin-left:auto;height:30px;padding:0 12px;border:0;border-radius:15px;background:var(--lilac);color:#fff;font:500 12.5px var(--body);letter-spacing:0;text-transform:none}
+  .mwalk svg{width:14px;height:14px}
+  #side:not(.open) #grid{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:108px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;margin:0 -16px;padding:0 16px;scroll-padding:0 16px;scrollbar-width:none}
+  #side:not(.open) #grid::-webkit-scrollbar{display:none}
+  #side:not(.open) #grid .ph{scroll-snap-align:start}
+  body.walking #sideBody > .sec:first-child{padding-top:0}
+  body.walking #mapbar{order:-2}
+  body.walking #mapWrap{order:-1;flex:1 1 0}
+  body.walking #svWrap{flex:1.9 1 0;order:1}
+  body.walking #locator{display:none}
+  body.walking #locCap{top:8px;right:8px;left:auto;width:auto;max-width:calc(100% - 16px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-radius:4px;font-size:10px;padding:4px 8px}
 }
 @media (hover:none){
   .about:hover .tip,.about:focus-within .tip,.about .tip:hover{visibility:hidden;opacity:0}
@@ -280,6 +300,7 @@ body.walking #mapbar #mbStreet{display:none}
 </head>
 <body>
 
+<div id="mtop"></div>
 <aside id="side">
   <button type="button" id="grab" aria-label="Expand panel"><span></span></button>
   <header>
@@ -1040,8 +1061,8 @@ function drawHome(here,loading){
       <div class="row"><button class="btn primary" id="wanderGo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13" cy="4" r="1.6"/><path d="M9 21l2-6 3 3v3M11 15l1-5 4 3 3 1M12 10l-4 2-1 4"/></svg>Walk to ${esc(aOne())} near here</button></div>
       ${embedReason?`<p class="warn">${esc(embedReason)}</p>`:''}
     </div>
-    <div class="sec">
-      <div class="lbl gl">${B?`${B.items.length} photos from that spot <button class="plink" id="clearBubble">show nearest instead</button>`:`Photos near here · ${loading?'asking GBIF…':esc(nearLabel(gridItems))}`}</div>
+    <div class="sec photos">
+      <div class="lbl gl"><span class="gtx">${B?`${B.items.length} photos from that spot <button class="plink" id="clearBubble">show nearest</button>`:`Photos near here · ${loading?'asking GBIF…':esc(nearLabel(gridItems))}`}</span><button type="button" class="mwalk" id="wanderGo2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="13" cy="4" r="1.6"/><path d="M9 21l2-6 3 3v3M11 15l1-5 4 3 3 1M11 10l-3 2-1 3"/></svg>Walk to nearest</button></div>
       ${apiDown&&!gridItems.length?`<p class="warn">GBIF isn’t answering right now (${esc(apiDown)}). Try again in a minute.</p>`:''}
       <div class="grid" id="grid">${gridItems.map(([d,it],i)=>{ const ph=it.gphotos&&it.gphotos[0]; return `<button class="ph${ph?'':' loading'}" data-i="${i}" aria-label="${esc(spOf(it)[0])}, ${it.r[3]||''}">${ph?`<img alt="" loading="lazy" src="${esc(ph.thumb)}" onerror="this.remove()">`:''}<span class="cap">${it.r[3]||'n.d.'} · ${fmtDist(d)}<br>${it.inat?'iNat':it.specimen?'herbarium':'GBIF'}</span></button>`; }).join('')}</div>
       <a class="btn inat" href="https://www.inaturalist.org/observations/upload" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Add your own ${esc(one())} to iNaturalist</a>
@@ -1065,6 +1086,7 @@ function drawHome(here,loading){
       <div class="lbl">Top countries · ${Object.entries(COUNT.country).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([s,n])=>`${esc(countryName(s))} ${fmtN(n)}`).join(' · ')||'…'}</div>
     </div>`;
   $('#wanderGo').onclick=nextLilac;
+  const w2=$('#wanderGo2'); if(w2) w2.onclick=nextLilac;
   const cb=$('#clearBubble'); if(cb) cb.onclick=()=>{ bubble=null; renderHome(); };
   document.querySelectorAll('#grid .ph').forEach(b=>b.onclick=()=>visit(gridItems[+b.dataset.i][1]));
 }
@@ -1342,49 +1364,63 @@ function setPlant(id){
 setPlant((location.hash||'').slice(1)||'lilac');
 
 (function(){
-  const side=$('#side'), grab=$('#grab'), mq=matchMedia('(max-width:820px)');
-  let state='peek';
+  const side=$('#side'), grab=$('#grab'), mtop=$('#mtop'), header=side.querySelector('header'), root=document.documentElement, mq=matchMedia('(max-width:820px)');
+  let state='peek', lastPeek=0;
+  const peekPx=()=>parseFloat(getComputedStyle(root).getPropertyValue('--peek'))||170;
+  const openPx=()=>Math.round(innerHeight*.62);
+  function place(){
+    if(mq.matches){ if(header.parentNode!==mtop) mtop.appendChild(header); }
+    else if(header.parentNode!==side){ side.insertBefore(header,$('#sideBody')); }
+    setSheet('peek'); measure(); setTimeout(()=>map.invalidateSize(),60);
+  }
   function measure(){
-    if(!mq.matches) return;
-    const first=document.body.classList.contains('walking') ? $('#sideBody > .sec') : side.querySelector('header');
-    const h=grab.offsetHeight+(first?first.offsetHeight:120);
-    const prev=getComputedStyle(document.documentElement).getPropertyValue('--peek');
-    document.documentElement.style.setProperty('--peek',h+'px');
-    if(prev.trim()!==h+'px') setTimeout(()=>map.invalidateSize(),340);
+    if(!mq.matches||state!=='peek') return;
+    const walking=document.body.classList.contains('walking');
+    const anchor=walking ? $('#sideBody > .sec') : ($('#grid')||$('#sideBody .gl')||$('#sideBody > .sec'));
+    if(!anchor) return;
+    const h=Math.max(72,Math.min(340,Math.round(anchor.getBoundingClientRect().bottom-side.getBoundingClientRect().top+side.scrollTop+(walking?0:14))));
+    if(h===lastPeek) return;
+    lastPeek=h; root.style.setProperty('--peek',h+'px');
+    setTimeout(()=>map.invalidateSize(),320);
   }
   function setSheet(s){
-    state=s; side.classList.toggle('half',s==='half'); side.classList.toggle('full',s==='full');
-    side.style.height=''; if(s==='peek') side.scrollTop=0;
-    grab.setAttribute('aria-label',s==='full'?'Collapse panel':'Expand panel');
+    state=s; side.classList.toggle('open',s==='open'); side.style.height='';
+    if(s==='peek'){ side.scrollTop=0; const g=$('#grid'); if(g) g.scrollLeft=0; }
+    grab.setAttribute('aria-label',s==='open'?'Collapse panel':'Expand panel'); grab.setAttribute('aria-expanded',s==='open');
+    if(s==='peek') requestAnimationFrame(measure);
   }
-  let y0=0,h0=0,t0=0,drag=false,down=false,fromGrab=false;
-  function start(e){ if(!mq.matches) return; down=true; drag=false; y0=e.clientY; h0=side.offsetHeight; t0=Date.now(); fromGrab=grab.contains(e.target); }
-  function move(e){
+  let y0=0,h0=0,t0=0,drag=false,down=false,tapTarget=null;
+  side.addEventListener('pointerdown',e=>{
+    if(!mq.matches) return;
+    const zone=e.target.closest('#grab,.gl'); if(!zone) return;
+    down=true; drag=false; y0=e.clientY; h0=side.offsetHeight; t0=Date.now();
+    tapTarget=e.target.closest('button,a') && !e.target.closest('#grab') ? null : zone;
+  });
+  addEventListener('pointermove',e=>{
     if(!down) return;
     const dy=e.clientY-y0;
-    if(!drag&&Math.abs(dy)>6){ drag=true; side.classList.add('dragging'); }
-    if(!drag) return;
-    const max=innerHeight-62, peek=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--peek'))||150;
-    side.style.height=Math.max(peek,Math.min(max,h0-dy))+'px'; side.classList.add('half');
-  }
+    if(!drag&&Math.abs(dy)>6){ drag=true; side.classList.add('dragging'); side.classList.add('open'); }
+    if(drag) side.style.height=Math.max(peekPx(),Math.min(openPx(),h0-dy))+'px';
+  });
   function end(e){
     if(!down) return; down=false;
-    if(!drag){ if(fromGrab) setSheet(state==='peek'?'half':state==='half'?'full':'peek'); return; }
+    if(!drag){ if(tapTarget) setSheet(state==='peek'?'open':'peek'); return; }
     side.classList.remove('dragging');
     const h=side.offsetHeight, v=(e.clientY-y0)/Math.max(1,Date.now()-t0);
-    const H=innerHeight, stops={peek:parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--peek'))||150, half:H*.56, full:H-62};
-    let best='peek'; for(const k in stops) if(Math.abs(stops[k]-h)<Math.abs(stops[best]-h)) best=k;
-    if(v<-0.5) best=h<stops.half?'half':'full'; else if(v>0.5) best=h>stops.half?'half':'peek';
-    setSheet(best);
+    let next=(h-peekPx())>(openPx()-peekPx())/2?'open':'peek';
+    if(v<-0.4) next='open'; else if(v>0.4) next='peek';
+    setSheet(next);
   }
-  [grab,side.querySelector('header')].forEach(el=>el.addEventListener('pointerdown',start));
-  addEventListener('pointermove',move); addEventListener('pointerup',end); addEventListener('pointercancel',end);
+  addEventListener('pointerup',end); addEventListener('pointercancel',end);
   side.addEventListener('scroll',()=>{ if(state==='peek'&&side.scrollTop) side.scrollTop=0; });
+  map.on('dragstart',()=>{ if(mq.matches&&state==='open') setSheet('peek'); });
   let wasWalking=document.body.classList.contains('walking');
-  new MutationObserver(()=>{ const w=document.body.classList.contains('walking'); if(w===wasWalking) return; wasWalking=w; measure(); setSheet('peek'); }).observe(document.body,{attributes:true,attributeFilter:['class']});
-  new MutationObserver(measure).observe($('#sideBody'),{childList:true});
-  addEventListener('resize',measure); if(document.fonts) document.fonts.ready.then(measure);
-  measure(); setSheet('peek');
+  new MutationObserver(()=>{ const w=document.body.classList.contains('walking'); if(w===wasWalking) return; wasWalking=w; setSheet('peek'); }).observe(document.body,{attributes:true,attributeFilter:['class']});
+  new MutationObserver(()=>requestAnimationFrame(measure)).observe($('#sideBody'),{childList:true});
+  addEventListener('resize',()=>{ lastPeek=0; measure(); });
+  if(document.fonts) document.fonts.ready.then(()=>{ lastPeek=0; measure(); });
+  mq.addEventListener('change',place);
+  place();
 })();
 })();
 </script>
