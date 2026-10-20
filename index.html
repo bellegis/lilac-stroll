@@ -287,9 +287,9 @@ body.walking #mapbar #mbStreet{display:none}
   body.walking #sideBody > .sec:first-child{padding-top:0}
   body.walking #mapbar{order:-2}
   body.walking #mapWrap{order:-1;flex:1 1 0}
-  body.walking #svWrap{flex:1.9 1 0;order:1}
-  body.walking #locator{display:none}
-  body.walking #locCap{top:8px;right:8px;left:auto;width:auto;max-width:calc(100% - 16px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-radius:4px;font-size:10px;padding:4px 8px}
+  body.walking #svWrap{flex:1.55 1 0;order:1}
+  body.walking #locator{top:8px;right:8px;width:104px;height:74px}
+  body.walking #locCap{top:82px;right:8px;width:104px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:9px;padding:3px 6px}
 }
 @media (hover:none){
   .about:hover .tip,.about:focus-within .tip,.about .tip:hover{visibility:hidden;opacity:0}
@@ -807,24 +807,42 @@ async function placeSearch(q){
 
 map.on('click',e=>{ if(mode!=='map'||profileOpen||boxMode||Date.now()-boxEnded<500) return; const z=map.getZoom(); if(z<14) map.flyTo(e.latlng, z<6?z+4:z<9?10:z+2, { duration:reduceMotion?0:1.2 }); });
 
-let gReady=false, pano=null, svService=null, embedReason='';
-const googleLoaded=new Promise(res=>{
-  if(!GOOGLE_KEY){ embedReason='Street View is off: this copy of the page has no Google Maps key.'; res(false); return; }
-  window.gm_authFailure=()=>{ gReady=false; embedReason='Google rejected the Maps key on this site. Check the key’s website and API restrictions in Google Cloud.'; if(mode==='map') renderHome(); res(false); };
-  window.__gInit=()=>{ try{
-      svService=new google.maps.StreetViewService();
-      pano=new google.maps.StreetViewPanorama($('#sv'),{ visible:true, addressControl:false, fullscreenControl:false, motionTracking:false, motionTrackingControl:false, showRoadLabels:true, zoomControl:false, panControl:false, enableCloseButton:false });
-      pano.addListener('position_changed',onPanoMove); gReady=true; res(true);
-    }catch(e){ embedReason='Street View could not start.'; res(false); } };
-  const s=document.createElement('script'); s.src=`https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(GOOGLE_KEY)}&v=weekly&callback=__gInit`;
-  s.onerror=()=>{ embedReason='Google Maps could not load.'; res(false); }; document.head.appendChild(s);
-  setTimeout(()=>{ if(!gReady&&!embedReason){ embedReason='Google Maps took too long to load.'; res(false); } },12000);
-});
+let gReady=false, pano=null, svService=null, embedReason='', gPromise=null, svErrors=0;
+let sheetPeek=()=>{};
+if(!GOOGLE_KEY) embedReason='Street View is off: this copy of the page has no Google Maps key.';
+function useEmbedFromNow(why){
+  gReady=false; console.warn('Street View: '+why+' Using the Maps Embed API instead.');
+  if(mode==='walk'){ const x=viewing||current; if(x) embedAt(x.lat,x.lon); }
+}
+function embedAt(lat,lon){
+  showWorld('embed');
+  $('#svFrame').src=GOOGLE_KEY?`https://www.google.com/maps/embed/v1/streetview?key=${encodeURIComponent(GOOGLE_KEY)}&location=${lat},${lon}&fov=90`:`https://maps.google.com/maps?q=&layer=c&cbll=${lat},${lon}&output=svembed`;
+}
+function ensureGoogle(){
+  if(gPromise) return gPromise;
+  gPromise=new Promise(res=>{
+    if(!GOOGLE_KEY){ res(false); return; }
+    window.gm_authFailure=()=>{ useEmbedFromNow('Google refused the Maps JavaScript API request.'); res(false); };
+    window.__gInit=()=>{ try{
+        svService=new google.maps.StreetViewService();
+        pano=new google.maps.StreetViewPanorama($('#sv'),{ visible:true, addressControl:false, fullscreenControl:false, motionTracking:false, motionTrackingControl:false, showRoadLabels:true, zoomControl:false, panControl:false, enableCloseButton:false });
+        pano.addListener('position_changed',onPanoMove); gReady=true; res(true);
+      }catch(e){ console.warn('Street View could not start.'); res(false); } };
+    const s=document.createElement('script'); s.src=`https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(GOOGLE_KEY)}&v=weekly&callback=__gInit`;
+    s.onerror=()=>{ console.warn('Google Maps could not load.'); res(false); }; document.head.appendChild(s);
+    setTimeout(()=>{ if(!pano){ console.warn('Google Maps took too long to load.'); res(false); } },12000);
+  });
+  return gPromise;
+}
 async function findPano(lat,lon,radius){
   if(!gReady) return null;
   try{ const {data}=await svService.getPanorama({ location:{lat,lng:lon}, radius, ...(google.maps.StreetViewSource.GOOGLE?{ sources:[google.maps.StreetViewSource.GOOGLE] }:{ source:google.maps.StreetViewSource.OUTDOOR }), preference:google.maps.StreetViewPreference.NEAREST });
+    svErrors=0;
     return data&&data.location?{ pano:data.location.pano, lat:data.location.latLng.lat(), lon:data.location.latLng.lng() }:null;
-  }catch(e){ return null; }
+  }catch(e){
+    const code=e&&e.code; if(code&&code!=='ZERO_RESULTS'&&code!=='NOT_FOUND'&&++svErrors>=2) useEmbedFromNow('Street View lookups are failing ('+code+').');
+    return null;
+  }
 }
 function panoPos(){ const p=pano&&pano.getPosition(); return p?[p.lat(),p.lng()]:null; }
 function setPano(id){ return new Promise(res=>{ let done=false; const l=pano.addListener('position_changed',()=>{ if(done) return; done=true; l.remove(); res(true); }); pano.setPano(id); setTimeout(()=>{ if(!done){ done=true; l.remove(); res(false); } },5000); }); }
@@ -884,22 +902,22 @@ function markCurrent(){ cluster(); }
 async function visit(it){
   viewing=null;
   if(profileOpen) closeProfile(true);
-  const my=++token; current=it; enterWalk(); setScent(0);
+  const my=++token; current=it; enterWalk(); setScent(0); sheetPeek();
   if(map.getZoom()<15) map.setView([it.lat,it.lon],16);
   markCurrent();
   const mP=full(it);
   phase='walking';
   renderRecord(it, MEDIA.get(it.id)||null, 'walking');
   mP.then(m=>{ if(my===token&&!profileOpen) renderRecord(it,m,phase); });
-  await googleLoaded; if(my!==token) return;
+  await ensureGoogle(); if(my!==token) return;
   let ok=true;
   if(gReady){
     showWorld('pano');
     ok=await approach(it,my); if(my!==token) return;
-    if(!ok){ showWorld('none'); noImagery.add(it.id); $('#svNoneText').innerHTML=`Google hasn’t photographed the streets here, so there’s no Street View.<br>The photo and record are on the left. Press <b>Next ${esc(one())} →</b> to keep going.`; }
+    if(!ok&&!gReady){ embedAt(it.lat,it.lon); ok=true; }
+    else if(!ok){ showWorld('none'); noImagery.add(it.id); $('#svNoneText').innerHTML=`Google hasn’t photographed the streets here, so there’s no Street View.<br>The photo and record are on the left. Press <b>Next ${esc(one())} →</b> to keep going.`; }
   } else {
-    showWorld('embed');
-    $('#svFrame').src=GOOGLE_KEY?`https://www.google.com/maps/embed/v1/streetview?key=${encodeURIComponent(GOOGLE_KEY)}&location=${it.lat},${it.lon}&fov=90`:`https://maps.google.com/maps?q=&layer=c&cbll=${it.lat},${it.lon}&output=svembed`;
+    embedAt(it.lat,it.lon);
   }
   phase='here';
   visited.add(it.id); store.set('scent-stroll-visited',[...visited].slice(-5000));
@@ -994,7 +1012,7 @@ async function nextLilac(){
   if(choosing) return; choosing=true;
   const btn=$('#nextBtn'); if(btn){ btn.disabled=true; btn.textContent='Choosing…'; }
   if(mode!=='walk'){ enterWalk(); renderStatusOnly(`Choosing ${aOne()} nearby…`); }
-  await googleLoaded;
+  await ensureGoogle();
   const from=current?[current.lat,current.lon]:(panoPos()||[map.getCenter().lat,map.getCenter().lng]);
   const it=await chooseNext(from);
   choosing=false;
@@ -1168,9 +1186,9 @@ function drawProfilePoints(fit){
 }
 function focusProfileItem(i){
   const x=profileState&&profileState.items[i]; if(!x) return;
-  if(x.lat!=null){ map.setView([x.lat,x.lon],Math.max(map.getZoom(),15)); viewPlace(x); }
+  if(x.lat!=null){ sheetPeek(); map.setView([x.lat,x.lon],Math.max(map.getZoom(),15)); viewPlace(x); }
   document.querySelectorAll('.pgrid .ph').forEach(b=>b.classList.toggle('sel',+b.dataset.i===i));
-  const el=document.querySelector(`.pgrid .ph[data-i="${i}"]`); if(el) el.scrollIntoView({block:'nearest',behavior:reduceMotion?'auto':'smooth'});
+  const el=innerWidth>820&&document.querySelector(`.pgrid .ph[data-i="${i}"]`); if(el) el.scrollIntoView({block:'nearest',behavior:reduceMotion?'auto':'smooth'});
   const box=$('#pfocus'); if(box) box.innerHTML=`<img alt="" src="${esc(x.big)}"><div><b>${esc(x.name)}</b>${x.sci&&x.sci!==x.name?` <i>${esc(x.sci)}</i>`:''}<br><span class="mono">${esc(x.date)}${x.place?' · '+esc(x.place):''}</span><br><a href="${esc(x.url)}" target="_blank" rel="noopener">Open the record ↗</a></div>`;
 }
 function renderProfile(){
@@ -1202,7 +1220,7 @@ function renderProfile(){
 async function viewPlace(x){
   const my=++token; enterWalk(); phase='walking'; setScent(0); viewing=x;
   stripMsg=''; updateStrip();
-  await googleLoaded; if(my!==token) return;
+  await ensureGoogle(); if(my!==token) return;
   if(gReady){
     showWorld('pano');
     const ok=await approach({ id:x.id, lat:x.lat, lon:x.lon }, my); if(my!==token) return;
@@ -1419,6 +1437,7 @@ setPlant((location.hash||'').slice(1)||'lilac');
   new MutationObserver(()=>requestAnimationFrame(measure)).observe($('#sideBody'),{childList:true});
   addEventListener('resize',()=>{ lastPeek=0; measure(); });
   if(document.fonts) document.fonts.ready.then(()=>{ lastPeek=0; measure(); });
+  sheetPeek=()=>{ if(mq.matches&&state!=='peek') setSheet('peek'); };
   mq.addEventListener('change',place);
   place();
 })();
