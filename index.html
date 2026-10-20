@@ -255,7 +255,31 @@ body.walking #mapbar #mbStreet{display:none}
   .leaflet-control-attribution{font-size:9px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .row .btn{height:46px}
 }
-#grab,#mtop,.mwalk{display:none}
+#grab,#mtop,.mwalk,#phChip{display:none}
+#phBox{position:fixed;inset:0;z-index:3000;display:flex;flex-direction:column;background:#15111B;color:#fff;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);animation:pbIn .22s ease}
+#phBox[hidden]{display:none}
+@keyframes pbIn{from{opacity:0}to{opacity:1}}
+@keyframes chipIn{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+.pbTop{flex:none;display:flex;align-items:center;gap:12px;padding:10px 10px 8px 16px}
+.pbTitle{flex:1;min-width:0;display:grid;line-height:1.3}
+.pbTitle b{font:600 18px var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pbTitle span{font:400 11px var(--mono);color:#CFC4DC;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pbX{flex:none;width:44px;height:44px;border:0;border-radius:22px;background:rgba(255,255,255,.12);color:#fff;font-size:26px;line-height:1}
+.pbImg{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:0 8px;touch-action:pan-y}
+.pbImg img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;user-select:none;-webkit-user-drag:none}
+.pbNav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:56px;border:0;border-radius:8px;background:rgba(20,16,26,.5);color:#fff;font-size:30px;line-height:1}
+.pbNav.prev{left:6px}.pbNav.next{right:6px}
+.pbNav[hidden]{display:none}
+.pbThumbs{flex:none;display:flex;gap:6px;overflow-x:auto;padding:10px 16px 0;scrollbar-width:none}
+.pbThumbs:empty{display:none}
+.pbThumbs button{flex:none;width:48px;height:48px;padding:0;border:2px solid transparent;border-radius:7px;overflow:hidden;background:#3A3344}
+.pbThumbs button[aria-current="true"]{border-color:#fff}
+.pbThumbs img{width:100%;height:100%;object-fit:cover;display:block}
+.pbCap{flex:none;padding:10px 16px 0;font:400 11px var(--mono);color:#CFC4DC;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pbAct{flex:none;display:flex;gap:8px;padding:12px 16px 14px}
+.pbAct button{flex:1;height:46px;border-radius:10px;border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;font:500 14px var(--body)}
+.pbAct .pbBack{background:var(--lilac);border-color:var(--lilac)}
+#heroImg{cursor:zoom-in}
 @media (max-width:820px){
   body{display:flex;flex-direction:column;height:100vh;height:100dvh}
   #mtop{display:block;flex:none;position:relative;z-index:2;background:var(--paper);border-bottom:1px solid var(--line)}
@@ -289,6 +313,12 @@ body.walking #mapbar #mbStreet{display:none}
   body.walking #mapWrap{order:-1;flex:1 1 0}
   body.walking #svWrap{flex:1.55 1 0;order:1}
   body.walking #locator{top:8px;right:8px;width:104px;height:74px}
+  body.walking #phChip:not([hidden]){display:block;position:absolute;left:10px;top:10px;z-index:20;width:88px;height:88px;padding:0;border:3px solid #fff;border-radius:12px;overflow:hidden;background:var(--lilac-soft);box-shadow:0 4px 16px rgba(20,16,26,.4);animation:chipIn .4s cubic-bezier(.2,.9,.3,1.3)}
+  #phChip img{width:100%;height:100%;object-fit:cover;display:block}
+  #phChip .pc{position:absolute;left:0;right:0;bottom:0;padding:12px 5px 4px;background:linear-gradient(transparent,rgba(20,16,26,.8));color:#fff;font:500 9px var(--mono);letter-spacing:.06em;text-transform:uppercase;text-align:left}
+  #phChip .pn{position:absolute;top:4px;right:4px;min-width:18px;padding:1px 5px;border-radius:9px;background:var(--ink);color:#fff;font:500 9.5px/16px var(--mono)}
+  #phChip .pn[hidden]{display:none}
+
   body.walking #locCap{top:82px;right:8px;width:104px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:9px;padding:3px 6px}
 }
 @media (hover:none){
@@ -300,6 +330,13 @@ body.walking #mapbar #mbStreet{display:none}
 </head>
 <body>
 
+<div id="phBox" hidden role="dialog" aria-modal="true" aria-label="Photo">
+  <div class="pbTop"><div class="pbTitle"><b></b><span></span></div><button type="button" class="pbX" aria-label="Close photo">×</button></div>
+  <div class="pbImg"><img alt=""><button type="button" class="pbNav prev" aria-label="Previous photo">‹</button><button type="button" class="pbNav next" aria-label="Next photo">›</button></div>
+  <div class="pbThumbs"></div>
+  <div class="pbCap"></div>
+  <div class="pbAct"><button type="button" class="pbRec">Record details</button><button type="button" class="pbBack">Back to Street View</button></div>
+</div>
 <div id="mtop"></div>
 <aside id="side">
   <button type="button" id="grab" aria-label="Expand panel"><span></span></button>
@@ -348,6 +385,7 @@ body.walking #mapbar #mbStreet{display:none}
     <canvas id="motes" aria-hidden="true"></canvas>
     <div id="veil"></div>
     <iframe id="svFrame" title="Google Street View" hidden allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <button type="button" id="phChip" hidden aria-label="Open the photo of this plant"><img alt=""><span class="pc"></span><span class="pn" hidden></span></button>
     <div id="svNone" hidden><div id="svNoneText">No Street View imagery within 250 m of this plant.</div></div>
   </div>
   <div id="strip"><span class="lbl" style="color:#cfc4dc">scent</span><span id="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="grow" id="stripText"></span><a id="stripLink" target="_blank" rel="noopener">Google Maps ↗</a></div>
@@ -808,7 +846,7 @@ async function placeSearch(q){
 map.on('click',e=>{ if(mode!=='map'||profileOpen||boxMode||Date.now()-boxEnded<500) return; const z=map.getZoom(); if(z<14) map.flyTo(e.latlng, z<6?z+4:z<9?10:z+2, { duration:reduceMotion?0:1.2 }); });
 
 let gReady=false, pano=null, svService=null, embedReason='', gPromise=null, svErrors=0;
-let sheetPeek=()=>{};
+let sheetPeek=()=>{}, sheetOpen=()=>{}, setPhotoChip=()=>{}, openPhotos=()=>{};
 if(!GOOGLE_KEY) embedReason='Street View is off: this copy of the page has no Google Maps key.';
 function useEmbedFromNow(why){
   gReady=false; console.warn('Street View: '+why+' Using the Maps Embed API instead.');
@@ -887,7 +925,7 @@ function placeLine(lat,lon){
 }
 
 map.on('moveend zoomend', syncLocator);
-function backToMap(){ viewing=null; token++; setScent(0); mode='map'; document.body.classList.remove('walking'); $('#svFrame').src='about:blank'; setTimeout(()=>{ map.invalidateSize(); if(current) map.setView([current.lat,current.lon],Math.max(map.getZoom(),14)); },60); renderHome(); }
+function backToMap(){ viewing=null; setPhotoChip(null); token++; setScent(0); mode='map'; document.body.classList.remove('walking'); $('#svFrame').src='about:blank'; setTimeout(()=>{ map.invalidateSize(); if(current) map.setView([current.lat,current.lon],Math.max(map.getZoom(),14)); },60); renderHome(); }
 let viewing=null;
 function updateStrip(){
   const here=panoPos(); let t=stripMsg;
@@ -1186,6 +1224,7 @@ function drawProfilePoints(fit){
 }
 function focusProfileItem(i){
   const x=profileState&&profileState.items[i]; if(!x) return;
+  setPhotoChip(x.big?{ photos:[{ large:[x.big], thumb:x.big, credit:'' }], title:x.name, sub:[x.date,x.place].filter(Boolean).join(' · '), tag:'Photo' }:null);
   if(x.lat!=null){ sheetPeek(); map.setView([x.lat,x.lon],Math.max(map.getZoom(),15)); viewPlace(x); }
   document.querySelectorAll('.pgrid .ph').forEach(b=>b.classList.toggle('sel',+b.dataset.i===i));
   const el=innerWidth>820&&document.querySelector(`.pgrid .ph[data-i="${i}"]`); if(el) el.scrollIntoView({block:'nearest',behavior:reduceMotion?'auto':'smooth'});
@@ -1323,7 +1362,9 @@ function renderRecord(it,m,ph){
   const sa=$('#seeAll'); if(sa) sa.onclick=()=>openProfile(inat&&inat.user&&inat.user.login?{ kind:'inat', login:inat.user.login, name:inat.user.name||'', icon:inat.user.icon||'' }:{ kind:'gbif', name:r[9] });
   speciesCount(it).then(n=>{ const el=$('#spCount'); if(el) el.textContent= n==null?'—':`${fmtN(n)} photographed ${it.sp} worldwide`; });
   $('#sideBody').scrollTop=0; if(innerWidth<=820) $('#side').scrollTop=0;
+  setPhotoChip(photos.length?{ photos, title:common, sub:[fmtTime(it,inat), srcLabel].filter(Boolean).join(' · '), tag:it.inat?'iNat photo':it.specimen?'Herbarium':'GBIF photo' }:null);
   const img=$('#heroImg');
+  if(img) img.addEventListener('click',()=>openPhotos(+img.dataset.p||0));
   if(img) img.onerror=()=>{ const p=photos[+img.dataset.p||0], k=(+img.dataset.k||0)+1; img.dataset.k=k; if(p&&k<p.large.length) img.src=p.large[k]; else img.closest('.hero').innerHTML=`<div class="msg">The image host didn’t respond. <a href="https://www.gbif.org/occurrence/${r[13]}" target="_blank" rel="noopener">GBIF ${r[13]} ↗</a></div>`; };
   document.querySelectorAll('.thumbs button').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i, p=photos[i], im=$('#heroImg'); if(!im) return; im.dataset.p=i; im.dataset.k=0; im.src=p.large[0]; $('#credit').textContent=p.credit||'via GBIF'; document.querySelectorAll('.thumbs button').forEach(x=>x.setAttribute('aria-current',String(x===b))); });
 }
@@ -1438,8 +1479,52 @@ setPlant((location.hash||'').slice(1)||'lilac');
   addEventListener('resize',()=>{ lastPeek=0; measure(); });
   if(document.fonts) document.fonts.ready.then(()=>{ lastPeek=0; measure(); });
   sheetPeek=()=>{ if(mq.matches&&state!=='peek') setSheet('peek'); };
+  sheetOpen=()=>{ if(mq.matches) setSheet('open'); };
   mq.addEventListener('change',place);
   place();
+})();
+(function(){
+  const chip=$('#phChip'), box=$('#phBox'), big=box.querySelector('.pbImg img');
+  let cur=null, idx=0, k=0, lastFocus=null;
+  setPhotoChip=info=>{
+    cur=info;
+    if(!info||!info.photos.length){ chip.hidden=true; return; }
+    const p=info.photos[0], im=chip.querySelector('img'), src=p.thumb||p.large[0];
+    if(im.getAttribute('src')!==src){ chip.hidden=true; im.onload=()=>{ if(cur===info) chip.hidden=false; }; im.onerror=()=>{ chip.hidden=true; }; im.src=src; } else chip.hidden=false;
+    chip.querySelector('.pc').textContent=info.tag||'Photo';
+    const n=chip.querySelector('.pn'); n.hidden=info.photos.length<2; n.textContent=info.photos.length;
+  };
+  function show(i){
+    const ps=cur.photos; idx=(i+ps.length)%ps.length; k=0;
+    const p=ps[idx]; big.src=p.large[0]; big.alt=cur.title||'';
+    big.onerror=()=>{ k++; if(k<p.large.length) big.src=p.large[k]; };
+    box.querySelector('.pbCap').textContent=p.credit?`© ${p.credit.replace(/^\(c\)\s*/i,'')}`:'';
+    box.querySelectorAll('.pbThumbs button').forEach((b,j)=>b.setAttribute('aria-current',j===idx));
+    box.querySelectorAll('.pbNav').forEach(b=>b.hidden=ps.length<2);
+  }
+  openPhotos=(i=0)=>{
+    if(!cur||!cur.photos.length) return;
+    lastFocus=document.activeElement;
+    box.querySelector('.pbTitle b').textContent=cur.title||'';
+    box.querySelector('.pbTitle span').textContent=cur.sub||'';
+    box.querySelector('.pbThumbs').innerHTML=cur.photos.length>1?cur.photos.slice(0,20).map((p,j)=>`<button type="button" data-i="${j}" aria-label="Photo ${j+1}"><img alt="" loading="lazy" src="${esc(p.thumb||p.large[0])}"></button>`).join(''):'';
+    box.querySelectorAll('.pbThumbs button').forEach(b=>b.onclick=()=>show(+b.dataset.i));
+    box.querySelector('.pbRec').hidden=innerWidth>820||mode!=='walk';
+    box.querySelector('.pbBack').textContent=mode==='walk'?'Back to Street View':'Close';
+    show(i); box.hidden=false; box.querySelector('.pbX').focus();
+  };
+  function close(){ box.hidden=true; big.removeAttribute('src'); if(lastFocus&&lastFocus.focus) lastFocus.focus(); }
+  chip.addEventListener('click',()=>openPhotos(0));
+  box.querySelector('.pbX').onclick=close; box.querySelector('.pbBack').onclick=close;
+  box.querySelector('.pbRec').onclick=()=>{ close(); sheetOpen(); };
+  box.querySelector('.pbNav.prev').onclick=()=>show(idx-1); box.querySelector('.pbNav.next').onclick=()=>show(idx+1);
+  addEventListener('keydown',e=>{ if(box.hidden) return; if(e.key==='Escape') close(); else if(e.key==='ArrowLeft') show(idx-1); else if(e.key==='ArrowRight') show(idx+1); });
+  const area=box.querySelector('.pbImg'); let sx=null, sy=0;
+  area.addEventListener('pointerdown',e=>{ sx=e.clientX; sy=e.clientY; });
+  area.addEventListener('pointerup',e=>{ if(sx==null) return; const dx=e.clientX-sx, dy=e.clientY-sy; sx=null;
+    if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)&&cur.photos.length>1) show(idx+(dx<0?1:-1));
+    else if(dy>90&&Math.abs(dy)>Math.abs(dx)) close();
+    else if(Math.abs(dx)<8&&Math.abs(dy)<8&&e.target===area) close(); });
 })();
 })();
 </script>
