@@ -255,7 +255,31 @@ body.walking #mapbar #mbStreet{display:none}
   .leaflet-control-attribution{font-size:9px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .row .btn{height:46px}
 }
-#grab,#mtop,.mwalk,#phChip{display:none}
+#grab,#mtop,.mwalk,#phChip,.swapPill,.helpBtn,.m-only{display:none}
+.row .btn.swap{flex:none}
+.btn.swap{position:relative;gap:6px;color:var(--accent-ink);border-color:var(--lilac-2);white-space:nowrap}
+.btn.swap svg{width:15px;height:15px}
+.btn.swap select{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px}
+.trail{display:flex;align-items:center;gap:10px;margin:-2px 0 8px}
+.trail .plink{margin:0}
+.trail #dropProf{text-decoration:none;font-size:14px;color:var(--muted)}
+.foot-links{display:flex;align-items:center;gap:8px;color:var(--muted)}
+.howBtn{border:0;background:none;padding:0;color:var(--lilac);font-weight:600;font-size:12px;text-decoration:underline;text-underline-offset:3px}
+#intro{position:fixed;inset:0;z-index:3500;display:grid;place-items:center;padding:20px;background:rgba(36,32,43,.45);animation:pbIn .25s ease}
+#intro[hidden]{display:none}
+.inCard{width:min(560px,100%);max-height:calc(100vh - 40px);overflow:auto;background:var(--paper);border-radius:14px;box-shadow:0 20px 60px rgba(20,16,26,.35);padding:22px 24px 20px}
+.inKick{display:inline-block;font:500 11px var(--mono);letter-spacing:.04em;color:#fff;background:var(--ink);border-radius:6px;padding:5px 9px}
+#intro h2{font:600 30px/1.1 var(--display);margin:12px 0 10px}
+#intro p{margin:0 0 10px;font-size:15px;line-height:1.5}
+#intro .inSub{font-size:13.5px;color:var(--muted)}
+.inSteps{margin:14px 0 16px;padding:0 0 0 20px;display:grid;gap:8px;font-size:14px;line-height:1.45}
+.inSteps.m-only{display:none}
+.inSteps li::marker{font:500 12px var(--mono);color:var(--lilac)}
+.inTry{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 0 14px;border-top:1px solid var(--line)}
+.inTryLbl{width:100%;font:500 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.inGo{height:40px;padding:0 14px;border-radius:20px;border:1px solid var(--lilac-2);background:var(--card);color:var(--accent-ink);font:500 14px var(--body)}
+.inGo:hover{border-color:var(--lilac)}
+.inClose{width:100%;height:46px;border:0;border-radius:10px;background:var(--lilac);color:#fff;font:500 15px var(--body)}
 #phBox{position:fixed;inset:0;z-index:3000;display:flex;flex-direction:column;background:#15111B;color:#fff;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);animation:pbIn .22s ease}
 #phBox[hidden]{display:none}
 @keyframes pbIn{from{opacity:0}to{opacity:1}}
@@ -286,12 +310,23 @@ body.walking #mapbar #mbStreet{display:none}
   body.walking #mtop{display:none}
   #mtop header{position:relative;display:grid;gap:6px;padding:8px 12px 8px;border:0}
   #mtop .challenge{font-size:10.5px;padding:5px 9px;border-radius:6px}
-  #mtop h1{display:flex;align-items:center;gap:6px;font-size:25px;line-height:1.1}
-  #mtop h1 .live{order:3}
-  #mtop h1::after{content:"";order:2;width:8px;height:8px;margin:0 4px 5px 2px;border-right:2px solid var(--lilac);border-bottom:2px solid var(--lilac);transform:rotate(45deg)}
-  #mtop .pick{position:absolute;left:12px;right:12px;bottom:6px;height:34px;margin:0}
+  #mtop header{grid-template-columns:minmax(0,1fr) auto auto;align-items:center;column-gap:8px}
+  #mtop .challenge{grid-column:1 / -1}
+  #mtop h1{grid-column:1;grid-row:2;display:flex;align-items:center;gap:6px;min-width:0;font-size:24px;line-height:1.1;white-space:nowrap;overflow:hidden}
+  #mtop h1 #plantName{overflow:hidden;text-overflow:ellipsis}
+  #mtop h1 .live{display:none}
+  #mtop .swapPill{grid-column:2;grid-row:2;display:inline-flex;align-items:center;gap:4px;height:32px;padding:0 10px 0 12px;border:1.5px solid var(--lilac);border-radius:16px;background:var(--lilac-soft);color:var(--accent-ink);font:600 13px var(--body);white-space:nowrap}
+  #mtop .swapPill svg{width:14px;height:14px}
+  #mtop .pick{grid-column:1 / 3;grid-row:2;position:relative;align-self:stretch;margin:0;z-index:2}
   #mtop .pick span{display:none}
   #mtop .pick select{position:absolute;inset:0;width:100%;height:100%;opacity:0;font-size:16px}
+  #mtop .helpBtn{grid-column:3;grid-row:2;display:grid;place-items:center;width:32px;height:32px;border-radius:16px;border:1px solid var(--line);background:var(--card);color:var(--muted);font:600 15px var(--body);padding:0}
+  .inSteps.d-only{display:none}
+  .inSteps.m-only{display:grid}
+  #intro{place-items:end center;padding:0}
+  .inCard{width:100%;max-height:92vh;max-height:92dvh;border-radius:16px 16px 0 0;padding:18px 18px calc(16px + env(safe-area-inset-bottom))}
+  #intro h2{font-size:26px}
+  #intro p{font-size:14.5px}
   #world{position:relative;flex:1 1 auto;min-height:0;height:auto;margin-bottom:calc(var(--peek,170px) - 16px)}
   #side{position:fixed;left:0;right:0;bottom:0;z-index:600;height:var(--peek,170px);border:0;border-radius:16px 16px 0 0;box-shadow:0 -6px 24px rgba(36,32,43,.16);overflow:hidden;overscroll-behavior:contain;transition:height .3s cubic-bezier(.2,.8,.2,1);padding-bottom:env(safe-area-inset-bottom)}
   #side.open{height:62vh;height:62dvh;overflow-y:auto}
@@ -312,14 +347,14 @@ body.walking #mapbar #mbStreet{display:none}
   body.walking #mapbar{order:-2}
   body.walking #mapWrap{order:-1;flex:1 1 0}
   body.walking #svWrap{flex:1.55 1 0;order:1}
-  body.walking #locator{top:8px;right:8px;width:104px;height:74px}
+  body.walking #locator{top:8px;right:8px;width:136px;height:88px}
   body.walking #phChip:not([hidden]){display:block;position:absolute;left:10px;top:10px;z-index:20;width:88px;height:88px;padding:0;border:3px solid #fff;border-radius:12px;overflow:hidden;background:var(--lilac-soft);box-shadow:0 4px 16px rgba(20,16,26,.4);animation:chipIn .4s cubic-bezier(.2,.9,.3,1.3)}
   #phChip img{width:100%;height:100%;object-fit:cover;display:block}
   #phChip .pc{position:absolute;left:0;right:0;bottom:0;padding:12px 5px 4px;background:linear-gradient(transparent,rgba(20,16,26,.8));color:#fff;font:500 9px var(--mono);letter-spacing:.06em;text-transform:uppercase;text-align:left}
   #phChip .pn{position:absolute;top:4px;right:4px;min-width:18px;padding:1px 5px;border-radius:9px;background:var(--ink);color:#fff;font:500 9.5px/16px var(--mono)}
   #phChip .pn[hidden]{display:none}
 
-  body.walking #locCap{top:82px;right:8px;width:104px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:9px;padding:3px 6px}
+  body.walking #locCap{top:96px;right:8px;width:136px;white-space:normal;font-size:9.5px;line-height:1.3;padding:4px 7px}
 }
 @media (hover:none){
   .about:hover .tip,.about:focus-within .tip,.about .tip:hover{visibility:hidden;opacity:0}
@@ -337,6 +372,32 @@ body.walking #mapbar #mbStreet{display:none}
   <div class="pbCap"></div>
   <div class="pbAct"><button type="button" class="pbRec">Record details</button><button type="button" class="pbBack">Back to Street View</button></div>
 </div>
+<div id="intro" hidden role="dialog" aria-modal="true" aria-labelledby="introTitle">
+  <div class="inCard">
+    <div class="inKick">#30DayMapChallenge · Day 19 · Senses: Smell</div>
+    <h2 id="introTitle">Scent Strolls</h2>
+    <p>A map of strongly scented plants that people have photographed: lilac, linden, jasmine, pine and about 60 others. The photos and locations come from GBIF and iNaturalist. Pick a plant, then go stand next to one in Google Street View.</p>
+    <p class="inSub">You don’t need to add anything. This is for looking around. If you photograph one of these plants yourself, post it to iNaturalist: research-grade observations with an open license are shared to GBIF and show up here.</p>
+    <ol class="inSteps d-only">
+      <li><b>Pick a plant</b> from the menu at the top left.</li>
+      <li><b>Click a photo</b> on the map or in the left column to walk to it in Street View. <b>Next</b> walks you to another one nearby.</li>
+      <li><b>Follow someone.</b> On any record, click <i>See everything they’ve contributed</i>. Click one of their photos (a beetle, a fern, anything) to go there, then use <b>Change scent</b> to see what’s growing around that spot.</li>
+      <li><b>Move around</b> with the search box, <b>Zoom to area</b> (drag a box), or <b>World</b>.</li>
+    </ol>
+    <ol class="inSteps m-only">
+      <li><b>Tap the plant name</b> at the top to change scent.</li>
+      <li><b>Tap a photo</b> on the map or in the strip at the bottom to walk to it in Street View. <b>Next</b> walks you to another one nearby.</li>
+      <li><b>Tap the small photo</b> over Street View to see it full size. Drag the bottom panel up for the whole record.</li>
+      <li><b>Follow someone.</b> On a record, tap <i>See everything they’ve contributed</i>, tap one of their photos to go there, then <b>Change scent</b> to see what grows around it.</li>
+    </ol>
+    <div class="inTry">
+      <div class="inTryLbl">Try one</div>
+      <button type="button" class="inGo" data-plant="grape" data-at="43.77,11.25">Wild grape in Tuscany</button>
+      <button type="button" class="inGo" data-plant="birdcherry" data-at="55.75,37.62">Bird cherry in Moscow</button>
+    </div>
+    <button type="button" class="inClose">Look around on my own</button>
+  </div>
+</div>
 <div id="mtop"></div>
 <aside id="side">
   <button type="button" id="grab" aria-label="Expand panel"><span></span></button>
@@ -344,16 +405,19 @@ body.walking #mapbar #mbStreet{display:none}
     <a class="challenge" href="https://30daymapchallenge.com" target="_blank" rel="noopener"><span class="cd">#30DayMapChallenge</span><span class="cday">Day 19 · <b>Senses: Smell</b></span></a>
     <h1><span id="plantName">Lilac</span> <em>Stroll</em> <span class="live">Live</span></h1>
     <label class="pick" for="plantSel"><span>Choose a stroll</span><select id="plantSel"></select></label>
+    <span class="swapPill" aria-hidden="true">Change scent<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+    <button type="button" class="helpBtn" aria-label="How this map works">?</button>
   </header>
   <div id="sideBody"></div>
   <footer>
     <div class="cite"><span>Data</span><a href="https://www.gbif.org/occurrence/search?media_type=StillImage&q=Syringa" id="liveLink" target="_blank" rel="noopener">GBIF.org occurrence API · live</a></div>
+    <div class="foot-links"><button type="button" class="howBtn">How it works</button><span aria-hidden="true">·</span>
     <div class="about"><button type="button" aria-describedby="aboutTip">About this map</button>
       <div class="tip" id="aboutTip" role="tooltip">
         <dl class="adl">
           <dt>Map</dt><dd>Belle Lipton, GIS Librarian, Harvard Map Collection</dd>
           <dt>Project</dt><dd>#30DayMapChallenge 2026, Day 19: Senses: Smell</dd>
-          <dt>Data</dt><dd>GBIF.org occurrence search API, queried when the page loads. Records with coordinates and at least one image.</dd>
+          <dt>Data</dt><dd>GBIF.org occurrence search API, queried when the page loads. Observations with coordinates and at least one photo; herbarium specimens are left out.</dd>
           <dt>Taxon</dt><dd id="aboutQuery"><i>Syringa</i></dd>
           <dt>Records</dt><dd id="aboutCount">Counting…</dd>
           <dt id="snapLbl">Citation</dt><dd id="snapDd">GBIF.org (19 October 2026) GBIF Occurrence Download <a href="https://doi.org/10.15468/dl.9a39vn" target="_blank" rel="noopener">https://doi.org/10.15468/dl.9a39vn</a></dd>
@@ -364,6 +428,7 @@ body.walking #mapbar #mbStreet{display:none}
         </dl>
         <p class="hmc">The <a href="https://library.harvard.edu/libraries/harvard-map-collection" target="_blank" rel="noopener">Harvard Map Collection</a> helps researchers find and use geographic data, including from open-source databases like GBIF.</p>
       </div>
+    </div>
     </div>
   </footer>
 </aside>
@@ -555,7 +620,7 @@ const API='https://api.gbif.org/v1';
 const INAT_DATASET='50c9509d-22c7-4a22-a47d-8c48425ef4a7';
 let TAXON=null;
 let GEN=0;
-const BASEQ=()=>`${TAXON?'taxonKey='+TAXON:'scientificName='+encodeURIComponent(P.q)}&mediaType=StillImage&hasCoordinate=true&hasGeospatialIssue=false`;
+const BASEQ=()=>`${TAXON?'taxonKey='+TAXON:'scientificName='+encodeURIComponent(P.q)}&mediaType=StillImage&hasCoordinate=true&hasGeospatialIssue=false&basisOfRecord=HUMAN_OBSERVATION&basisOfRecord=OBSERVATION&basisOfRecord=MACHINE_OBSERVATION`;
 const ITEMS=[]; const BY_ID=new Map();
 const COUNT={ total:null, inat:null, specimen:null, month:Array(13).fill(0), state:{}, country:{}, sp:{} };
 let apiDown=null;
@@ -572,6 +637,7 @@ function ingest(o){
   const im=String(o.occurrenceID||'').match(/inaturalist\.org\/observations\/(\d+)/) || (o.datasetKey===INAT_DATASET && String(o.catalogNumber||'').match(/^(\d+)$/));
   const basis=o.basisOfRecord==='PRESERVED_SPECIMEN'?'S':o.basisOfRecord==='HUMAN_OBSERVATION'?'O':'X';
   const r=[o.decimalLatitude,o.decimalLongitude,si,o.year||0,o.month||0,o.day||0,hm?+hm[1]:'',o.locality||'',o.stateProvince||'',o.recordedBy||'',basis,o.institutionCode||'',1,String(o.key),im?im[1]:'',o.coordinateUncertaintyInMeters||0,o.elevation??'',o.countryCode||'',di,o.catalogNumber||''];
+  if(basis==='S') return null;
   const it={ id, lat:r[0], lon:r[1], r, sp, inat:r[14]||null, specimen:basis==='S', ds:o.datasetKey, gbif:o, gphotos:photosFrom(o), speciesKey:o.speciesKey };
   ITEMS.push(it); BY_ID.set(id,it);
   return it;
@@ -604,12 +670,11 @@ async function loadCounts(){
   }catch(e){}
   const genAtCount=GEN;
   try{
-    const [all,inat,spec]=await Promise.all([
+    const [all,inat]=await Promise.all([
       getJSON(`${API}/occurrence/search?${BASEQ()}&limit=0&facet=month&facet=country&month.facetLimit=12&country.facetLimit=250`),
-      getJSON(`${API}/occurrence/search?${BASEQ()}&datasetKey=${INAT_DATASET}&limit=0`),
-      getJSON(`${API}/occurrence/search?${BASEQ()}&basisOfRecord=PRESERVED_SPECIMEN&limit=0`)]);
+      getJSON(`${API}/occurrence/search?${BASEQ()}&datasetKey=${INAT_DATASET}&limit=0`)]);
     if(GEN!==genAtCount) return;
-    COUNT.total=all.count; COUNT.inat=inat.count; COUNT.specimen=spec.count;
+    COUNT.total=all.count; COUNT.inat=inat.count;
     for(const f of (all.facets||[])){
       if(f.field==='MONTH') for(const c of f.counts) COUNT.month[+c.name]=c.count;
       if(f.field==='COUNTRY') for(const c of f.counts) COUNT.country[c.name]=c.count;
@@ -711,12 +776,12 @@ function heatStyle(hex){ const [r,g,b]=hex2rgb(hex); const mx=Math.max(r,g,b), m
 function densityLayer(){
   if(density||!TAXON) return density;
   if(!heatFailed&&L.vectorGrid&&L.vectorGrid.protobuf){
-    density=L.vectorGrid.protobuf(`https://api.gbif.org/v2/map/occurrence/density/{z}/{x}/{y}.mvt?srs=EPSG:3857&taxonKey=${TAXON}&bin=hex&hexPerTile=40`,{ keepBuffer:4, updateWhenZooming:false,
+    density=L.vectorGrid.protobuf(`https://api.gbif.org/v2/map/occurrence/density/{z}/{x}/{y}.mvt?srs=EPSG:3857&taxonKey=${TAXON}&basisOfRecord=HUMAN_OBSERVATION&basisOfRecord=OBSERVATION&basisOfRecord=MACHINE_OBSERVATION&bin=hex&hexPerTile=40`,{ keepBuffer:4, updateWhenZooming:false,
       pane:'heat', interactive:false, maxNativeZoom:14, rendererFactory:L.canvas.tile, attribution:'Density: GBIF maps API',
       vectorTileLayerStyles:{ occurrence:p=>({ fill:true, fillColor:heatColor(+p.total||1), fillOpacity:.72, stroke:true, color:'#ffffff', weight:.5, opacity:.6 }) } });
     let ok=0,bad=0; density.on('tileload',()=>ok++); density.on('tileerror',()=>{ bad++; if(!ok&&bad>=4){ heatFailed=true; map.removeLayer(density); density=null; zoomLayers(); } });
   } else {
-    density=L.tileLayer(`https://api.gbif.org/v2/map/occurrence/density/{z}/{x}/{y}@2x.png?srs=EPSG:3857&taxonKey=${TAXON}&style=${heatStyle(P.color)}`,{ pane:'heat', tileSize:512, zoomOffset:-1, maxZoom:19, opacity:.85, attribution:'Density: GBIF maps API' });
+    density=L.tileLayer(`https://api.gbif.org/v2/map/occurrence/density/{z}/{x}/{y}@2x.png?srs=EPSG:3857&taxonKey=${TAXON}&basisOfRecord=HUMAN_OBSERVATION&basisOfRecord=OBSERVATION&basisOfRecord=MACHINE_OBSERVATION&style=${heatStyle(P.color)}`,{ pane:'heat', tileSize:512, zoomOffset:-1, maxZoom:19, opacity:.85, attribution:'Density: GBIF maps API' });
   }
   return density;
 }
@@ -925,7 +990,7 @@ function placeLine(lat,lon){
 }
 
 map.on('moveend zoomend', syncLocator);
-function backToMap(){ viewing=null; setPhotoChip(null); token++; setScent(0); mode='map'; document.body.classList.remove('walking'); $('#svFrame').src='about:blank'; setTimeout(()=>{ map.invalidateSize(); if(current) map.setView([current.lat,current.lon],Math.max(map.getZoom(),14)); },60); renderHome(); }
+function backToMap(){ const tgt=viewing||current; viewing=null; setPhotoChip(null); token++; setScent(0); mode='map'; document.body.classList.remove('walking'); $('#svFrame').src='about:blank'; setTimeout(()=>{ map.invalidateSize(); if(tgt) map.setView([tgt.lat,tgt.lon],Math.max(map.getZoom(),14)); },60); renderHome(); }
 let viewing=null;
 function updateStrip(){
   const here=panoPos(); let t=stripMsg;
@@ -952,6 +1017,7 @@ async function visit(it){
   if(gReady){
     showWorld('pano');
     ok=await approach(it,my); if(my!==token) return;
+    if(gReady) noSVStreak=ok?0:noSVStreak+1;
     if(!ok&&!gReady){ embedAt(it.lat,it.lon); ok=true; }
     else if(!ok){ showWorld('none'); noImagery.add(it.id); $('#svNoneText').innerHTML=`Google hasn’t photographed the streets here, so there’s no Street View.<br>The photo and record are on the left. Press <b>Next ${esc(one())} →</b> to keep going.`; }
   } else {
@@ -1025,36 +1091,45 @@ async function approach(it,my){
 }
 
 function candidates(from,maxD){ const c=[]; for(const it of shown()){ if(visited.has(it.id)||noImagery.has(it.id)||(current&&it.id===current.id)) continue; const d=dist(from,[it.lat,it.lon]); if(d>15&&d<maxD) c.push([d,it]); } return c; }
+let noSVStreak=0;
 async function chooseNext(from){
-
-  await loadNear(from[0],from[1],8,it=>!visited.has(it.id)&&!noImagery.has(it.id));
+  const must=noSVStreak>=2, fresh=it=>!visited.has(it.id)&&!noImagery.has(it.id);
+  await loadNear(from[0],from[1],must?20:8,fresh);
   let fallback=null;
   for(const maxD of [3000,25000,150000,800000,20000000]){
-    let c=candidates(from,maxD); if(!c.length) continue;
-    c.sort((a,b)=>a[0]-b[0]); c=c.slice(0,maxD<=3000?24:14);
-    if(!fallback) fallback=c[0][1];
-    const w=c.map(([d,it])=>(it.specimen?.2:1)/(1+d/600));
-    for(let tries=0;tries<10&&c.length;tries++){
-      let t=Math.random()*w.reduce((a,b)=>a+b,0), i=0; for(;i<c.length-1;i++){ t-=w[i]; if(t<=0) break; }
-      const it=c[i][1]; if(!gReady) return it;
-      if(await findPano(it.lat,it.lon,120)) return it;
-      noImagery.add(it.id); c.splice(i,1); w.splice(i,1);
+    let c=candidates(from,maxD);
+    if(c.length){
+      c.sort((a,b)=>a[0]-b[0]); c=c.slice(0,must?60:(maxD<=3000?24:14));
+      if(!fallback) fallback=c[0][1];
+      if(!gReady) return c[0][1];
+      const w=c.map(([d])=>1/(1+d/600));
+      let left=must?60:12;
+      while(left>0&&c.length){
+        const batch=[];
+        while(batch.length<4&&c.length){
+          let t=Math.random()*w.reduce((a,b)=>a+b,0), i=0; for(;i<c.length-1;i++){ t-=w[i]; if(t<=0) break; }
+          batch.push(c[i][1]); c.splice(i,1); w.splice(i,1);
+        }
+        left-=batch.length;
+        const found=await Promise.all(batch.map(it=>findPano(it.lat,it.lon,120)));
+        for(let k=0;k<batch.length;k++){ if(found[k]) return batch[k]; noImagery.add(batch[k].id); }
+      }
     }
-    if(maxD>=150000) await loadNear(from[0],from[1],30,it=>!visited.has(it.id)&&!noImagery.has(it.id));
+    if(maxD>=150000) await loadNear(from[0],from[1],must?60:30,fresh);
   }
-  return fallback;
+  return must?null:fallback;
 }
 let choosing=false;
-async function nextLilac(){
+async function nextLilac(fromHere){
   if(profileOpen) closeProfile(true);
   if(choosing) return; choosing=true;
   const btn=$('#nextBtn'); if(btn){ btn.disabled=true; btn.textContent='Choosing…'; }
   if(mode!=='walk'){ enterWalk(); renderStatusOnly(`Choosing ${aOne()} nearby…`); }
   await ensureGoogle();
-  const from=current?[current.lat,current.lon]:(panoPos()||[map.getCenter().lat,map.getCenter().lng]);
+  const from=Array.isArray(fromHere)?fromHere:current?[current.lat,current.lon]:(panoPos()||[map.getCenter().lat,map.getCenter().lng]);
   const it=await chooseNext(from);
   choosing=false;
-  if(!it){ if(btn){ btn.disabled=false; btn.textContent=`Next ${one()} →`; } stripMsg=`You’ve visited every ${one()} loaded around here. Search another place to keep going.`; updateStrip(); return; }
+  if(!it){ if(btn){ btn.disabled=false; btn.textContent=`Next ${one()} →`; } stripMsg=noSVStreak>=2?`No Street View near the other ${many()} around here. Search another place to keep going.`:`You’ve visited every ${one()} loaded around here. Search another place to keep going.`; updateStrip(); return; }
   want([it]); visit(it);
 }
 addEventListener('keydown',e=>{ if(e.key==='Escape'&&mode==='walk') backToMap(); });
@@ -1118,6 +1193,7 @@ function drawHome(here,loading){
       ${embedReason?`<p class="warn">${esc(embedReason)}</p>`:''}
     </div>
     <div class="sec photos">
+      ${lastPerson?`<div class="trail"><button type="button" class="plink" id="reProf">← Back to ${esc(lastPerson.name||'@'+lastPerson.login)}’s photos</button><button type="button" class="plink" id="dropProf" aria-label="Hide this link">×</button></div>`:''}
       <div class="lbl gl"><span class="gtx">${B?`${B.items.length} photos from that spot <button class="plink" id="clearBubble">show nearest</button>`:`Photos near here · ${loading?'asking GBIF…':esc(nearLabel(gridItems))}`}</span><button type="button" class="mwalk" id="wanderGo2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="13" cy="4" r="1.6"/><path d="M9 21l2-6 3 3v3M11 15l1-5 4 3 3 1M11 10l-3 2-1 3"/></svg>Walk to nearest</button></div>
       ${apiDown&&!gridItems.length?`<p class="warn">GBIF isn’t answering right now (${esc(apiDown)}). Try again in a minute.</p>`:''}
       <div class="grid" id="grid">${gridItems.map(([d,it],i)=>{ const ph=it.gphotos&&it.gphotos[0]; return `<button class="ph${ph?'':' loading'}" data-i="${i}" aria-label="${esc(spOf(it)[0])}, ${it.r[3]||''}">${ph?`<img alt="" loading="lazy" src="${esc(ph.thumb)}" onerror="this.remove()">`:''}<span class="cap">${it.r[3]||'n.d.'} · ${fmtDist(d)}<br>${it.inat?'iNat':it.specimen?'herbarium':'GBIF'}</span></button>`; }).join('')}</div>
@@ -1127,9 +1203,9 @@ function drawHome(here,loading){
       <div class="stats">
         <div class="stat"><b>${COUNT.total==null?'…':fmtN(COUNT.total)}</b><span>${esc(P.name.toLowerCase())} photos</span></div>
         <div class="stat"><b>${COUNT.inat==null?'…':fmtN(COUNT.inat)}</b><span>iNaturalist</span></div>
-        <div class="stat"><b>${COUNT.specimen==null?'…':fmtN(COUNT.specimen)}</b><span>herbarium sheets</span></div>
+        <div class="stat"><b>${COUNT.total==null?'…':fmtN(Object.keys(COUNT.country).length)}</b><span>countries</span></div>
       </div>
-      <p class="note">Live from the GBIF API: every ${esc(P.name.toLowerCase())} record in the world with a photo and coordinates.</p>
+      <p class="note">Live from the GBIF API: every observation of ${esc(aOne())} in the world with a photo and coordinates.</p>
     </div>
     <div class="sec gbif">
       <div class="lbl">Where these ${esc(many())} come from</div>
@@ -1141,8 +1217,10 @@ function drawHome(here,loading){
       ${histHTML(5)}
       <div class="lbl">Top countries · ${Object.entries(COUNT.country).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([s,n])=>`${esc(countryName(s))} ${fmtN(n)}`).join(' · ')||'…'}</div>
     </div>`;
-  $('#wanderGo').onclick=nextLilac;
-  const w2=$('#wanderGo2'); if(w2) w2.onclick=nextLilac;
+  $('#wanderGo').onclick=()=>nextLilac();
+  const w2=$('#wanderGo2'); if(w2) w2.onclick=()=>nextLilac();
+  const rp=$('#reProf'); if(rp) rp.onclick=()=>openProfile(lastPerson);
+  const dp=$('#dropProf'); if(dp) dp.onclick=()=>{ lastPerson=null; renderHome(); };
   const cb=$('#clearBubble'); if(cb) cb.onclick=()=>{ bubble=null; renderHome(); };
   document.querySelectorAll('#grid .ph').forEach(b=>b.onclick=()=>visit(gridItems[+b.dataset.i][1]));
 }
@@ -1160,6 +1238,7 @@ async function doSearch(e){
 let profileOpen=false, profileState=null;
 const profLayer=L.layerGroup();
 function closeProfile(silent){
+  if(profileState) lastPerson=profileState.person;
   profileOpen=false; profileState=null; map.removeLayer(profLayer); profLayer.clearLayers();
   if(!map.hasLayer(pins)) pins.addTo(map);
   zoomLayers();
@@ -1170,6 +1249,7 @@ function closeProfile(silent){
   else renderHome();
 }
 async function openProfile(person){
+  if(!person) return;
 
   profileOpen=true; profileState={ person, page:1, items:[], total:null, species:null, done:false };
   map.removeLayer(pins); map.removeLayer(clouds); map.removeLayer(dots); if(density&&map.hasLayer(density)) map.removeLayer(density);
@@ -1195,7 +1275,7 @@ async function loadProfilePage(first){
       }
       if(st.items.length>=st.total||!(obs.results||[]).length) st.done=true;
     } else {
-      const j=await getJSON(`${API}/occurrence/search?recordedBy=${encodeURIComponent(p.name)}&mediaType=StillImage&hasCoordinate=true&limit=60&offset=${(st.page-1)*60}${first?'&facet=speciesKey&speciesKey.facetLimit=1000':''}`);
+      const j=await getJSON(`${API}/occurrence/search?recordedBy=${encodeURIComponent(p.name)}&mediaType=StillImage&hasCoordinate=true&basisOfRecord=HUMAN_OBSERVATION&basisOfRecord=OBSERVATION&basisOfRecord=MACHINE_OBSERVATION&limit=60&offset=${(st.page-1)*60}${first?'&facet=speciesKey&speciesKey.facetLimit=1000':''}`);
       if(profileState!==st) return;
       st.total=j.count; if(first&&j.facets&&j.facets[0]) st.species=j.facets[0].counts.length;
       for(const o of (j.results||[])){
@@ -1228,14 +1308,15 @@ function focusProfileItem(i){
   if(x.lat!=null){ sheetPeek(); map.setView([x.lat,x.lon],Math.max(map.getZoom(),15)); viewPlace(x); }
   document.querySelectorAll('.pgrid .ph').forEach(b=>b.classList.toggle('sel',+b.dataset.i===i));
   const el=innerWidth>820&&document.querySelector(`.pgrid .ph[data-i="${i}"]`); if(el) el.scrollIntoView({block:'nearest',behavior:reduceMotion?'auto':'smooth'});
-  const box=$('#pfocus'); if(box) box.innerHTML=`<img alt="" src="${esc(x.big)}"><div><b>${esc(x.name)}</b>${x.sci&&x.sci!==x.name?` <i>${esc(x.sci)}</i>`:''}<br><span class="mono">${esc(x.date)}${x.place?' · '+esc(x.place):''}</span><br><a href="${esc(x.url)}" target="_blank" rel="noopener">Open the record ↗</a></div>`;
+  const box=$('#pfocus'); if(box) box.innerHTML=`<img alt="" src="${esc(x.big)}"><div><b>${esc(x.name)}</b>${x.sci&&x.sci!==x.name?` <i>${esc(x.sci)}</i>`:''}<br><span class="mono">${esc(x.date)}${x.place?' · '+esc(x.place):''}</span><br><a href="${esc(x.url)}" target="_blank" rel="noopener">Open the record ↗</a><br><button type="button" class="plink" id="walkHere">Walk to the nearest ${esc(one())} from here →</button></div>`;
+  const wh=$('#walkHere'); if(wh) wh.onclick=()=>nextLilac([x.lat,x.lon]);
 }
 function renderProfile(){
   const st=profileState; if(!st) return; const p=st.person;
   const av=p.icon?`<img alt="" src="${esc(p.icon)}">`:`<span>${esc((p.name||p.login||'?').slice(0,1).toUpperCase())}</span>`;
   const link=p.kind==='inat'?`<a href="https://www.inaturalist.org/people/${esc(p.login)}" target="_blank" rel="noopener">Profile on iNaturalist ↗</a>`:`<a href="https://www.gbif.org/occurrence/search?recorded_by=${encodeURIComponent(p.name)}&media_type=StillImage" target="_blank" rel="noopener">All their records on GBIF ↗</a>`;
   $('#sideBody').innerHTML=`
-    <div class="sec"><div class="row"><button class="btn" id="profBack">← Back to the ${esc(P.name.toLowerCase())} stroll</button></div></div>
+    <div class="sec"><div class="row"><button class="btn" id="profBack">← Back to ${esc(many())}</button>${swapHTML()}</div></div>
     <div class="sec">
       <div class="byline big"><div class="av">${av}</div><div><div class="lbl">Everything they’ve contributed</div><div class="who">${esc(p.name||'@'+p.login)}</div>${p.login?`<div class="whosub">@${esc(p.login)}</div>`:''}</div></div>
       <div class="stats">
@@ -1247,7 +1328,7 @@ function renderProfile(){
       ${st.err?`<p class="warn">Couldn’t load more (${esc(st.err)}).</p>`:''}
     </div>
     <div class="sec">
-      <div id="pfocus" class="pfocus"><p class="note">Click a photo or a dark dot to go there in Street View.</p></div>
+      <div id="pfocus" class="pfocus"><p class="note">Click a photo or a dark dot to go there in Street View. Then use <b>Change scent</b> to see what’s growing around that spot.</p></div>
       <div class="grid pgrid">${st.items.map((x,i)=>`<button class="ph" data-i="${i}" aria-label="${esc(x.name)} ${esc(x.date)}">${x.thumb?`<img alt="" loading="lazy" src="${esc(x.thumb)}">`:''}<span class="cap">${esc(x.name)}<br>${esc(x.date.slice(0,4))}</span></button>`).join('')}${st.loading?'<button class="ph loading" disabled></button><button class="ph loading" disabled></button><button class="ph loading" disabled></button>':''}</div>
       ${!st.done&&!st.loading?'<button class="btn" id="profMore">Load more</button>':''}
     </div>`;
@@ -1269,13 +1350,29 @@ async function viewPlace(x){
   setTimeout(()=>map.invalidateSize(),450);
 }
 
+function plantOptions(sel){
+  const groups={};
+  for(const p of PLANTS){ (groups[p.g]=groups[p.g]||[]).push(p); }
+  return Object.entries(groups).map(([g,ps])=>`<optgroup label="${esc(g)}">${ps.map(p=>`<option value="${p.id}"${p.id===sel?' selected':''}>${esc(p.name)}</option>`).join('')}</optgroup>`).join('');
+}
+function swapHTML(){
+  return `<label class="btn swap"><span>Change scent</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg><select class="plantPick" aria-label="Change scent, staying here">${plantOptions(P.id)}</select></label>`;
+}
+function changeScentHere(id){
+  const x=viewing||(mode==='walk'?current:null);
+  const here=x?[x.lat,x.lon]:null;
+  setPlant(id);
+  if(here) map.setView(here,Math.max(14,Math.min(16,map.getZoom())),{ animate:false });
+  sheetPeek();
+}
+let lastPerson=null;
 function controls(){
   return `<div class="sec"><div class="row">
-    <button class="btn primary" id="nextBtn">Next ${esc(one())} →</button>
+    <button class="btn primary" id="nextBtn">Next ${esc(one())} →</button>${swapHTML()}
   </div></div>`;
 }
 function bindControls(){
-  $('#nextBtn').onclick=nextLilac;
+  $('#nextBtn').onclick=()=>nextLilac();
 }
 function renderStatusOnly(msg){ $('#sideBody').innerHTML=controls()+`<div class="sec status">${esc(msg)}</div>`; bindControls(); }
 const PHENO={13:'Flowering',15:'Flower budding',14:'Fruiting',21:'No flowers or fruits'};
@@ -1395,17 +1492,18 @@ mc_.addEventListener('touchstart',boxDown,{passive:false}); mc_.addEventListener
 addEventListener('keydown',e=>{ if(e.key==='Escape'&&boxMode) setBoxMode(false); });
 
 (function fillSelect(){
-  const sel=$('#plantSel'); const groups={};
-  for(const p of PLANTS){ (groups[p.g]=groups[p.g]||[]).push(p); }
-  sel.innerHTML=Object.entries(groups).map(([g,ps])=>`<optgroup label="${esc(g)}">${ps.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</optgroup>`).join('');
-  sel.onchange=()=>setPlant(sel.value);
+  const sel=$('#plantSel');
+  sel.innerHTML=plantOptions();
+  sel.onchange=()=>changeScentHere(sel.value);
+  document.addEventListener('change',e=>{ if(e.target.matches&&e.target.matches('select.plantPick')) changeScentHere(e.target.value); });
 })();
 function setPlant(id){
   P=PLANTS.find(p=>p.id===id)||PLANTS[0];
   GEN++; token++;
   try{ history.replaceState(null,'','#'+P.id); }catch(e){}
-  $('#plantSel').value=P.id;
+  $('#plantSel').value=P.id; noSVStreak=0;
   if(profileOpen) closeProfile(true);
+  viewing=null; setPhotoChip(null);
   if(mode==='walk'){ mode='map'; document.body.classList.remove('walking'); $('#svFrame').src='about:blank'; setScent(0); setTimeout(()=>map.invalidateSize(),60); }
   current=null; phase='here'; bubble=null;
   ITEMS.length=0; BY_ID.clear(); boxCache.clear(); MEDIA.clear(); inflight.clear(); waiting.clear();
@@ -1525,6 +1623,22 @@ setPlant((location.hash||'').slice(1)||'lilac');
     if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)&&cur.photos.length>1) show(idx+(dx<0?1:-1));
     else if(dy>90&&Math.abs(dy)>Math.abs(dx)) close();
     else if(Math.abs(dx)<8&&Math.abs(dy)<8&&e.target===area) close(); });
+})();
+(function(){
+  const box=$('#intro'); let seen=false;
+  try{ seen=localStorage.getItem('scent-intro-seen')==='1'; }catch(e){}
+  function open(){ box.hidden=false; box.querySelector('.inClose').focus(); }
+  function close(){ box.hidden=true; try{ localStorage.setItem('scent-intro-seen','1'); }catch(e){} }
+  box.querySelector('.inClose').onclick=close;
+  box.addEventListener('click',e=>{ if(e.target===box) close(); });
+  addEventListener('keydown',e=>{ if(e.key==='Escape'&&!box.hidden) close(); });
+  box.querySelectorAll('.inGo').forEach(b=>b.onclick=()=>{
+    close(); const at=b.dataset.at.split(',').map(Number);
+    setPlant(b.dataset.plant); map.setView(at,12,{ animate:false });
+    setTimeout(()=>nextLilac(at),300);
+  });
+  document.querySelectorAll('.helpBtn,.howBtn').forEach(b=>b.onclick=e=>{ e.stopPropagation(); open(); });
+  if(!seen) open();
 })();
 })();
 </script>
